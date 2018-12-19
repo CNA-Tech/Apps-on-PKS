@@ -45,8 +45,8 @@ Perform the following steps to create a new PKS cluster that uses a medium load 
 
 	For example:
   ```
-	$ pks create-cluster pks-cluster-med-lb-istio \
-	--external-hostname k8s-cluster-med-lb-istio \
+	$ pks create-cluster k8s-with-istio \
+	--external-hostname k8s-with-istio \
 	--plan large \
 	--num-nodes 3 \
 	--network-profile network-profile-medium
@@ -105,7 +105,7 @@ helm template install/kubernetes/helm/istio --name istio --namespace istio-syste
 
 ### Step 5: Install Istio Using the Helm Manifest
 
-Perform the following commands to create a namespace for both PKS and VMware Cloud PKS and install Istio via the Helm manifest:
+Perform the following commands to create a namespace and install Istio via the Helm manifest:
 
 ```
 kubectl create namespace istio-system
@@ -168,7 +168,7 @@ The [Bookinfo application](https://istio.io/docs/examples/bookinfo/) is a standa
 
 Perform the following steps to deploy the Bookinfo application:
 
-1. Using a cluster with automatic sidecar injection enabled, label the `default` namespace with `istio-injection=enabled`. Run the following command:
+1. The installation already has automatic sidecar injection enabled on the cluster. Our application is going to be using the `default` namespace. This requires the label `istio-injection=enabled` be applied to the `default` namespace. Run the following command:
 
 	```
 	kubectl label namespace default istio-injection=enabled
@@ -184,7 +184,23 @@ Perform the following steps to deploy the Bookinfo application:
 
 	```
 	kubectl get services
+
+	NAME                       CLUSTER-IP   EXTERNAL-IP   PORT(S)              AGE
+    details                    10.0.0.31    <none>        9080/TCP             6m
+    kubernetes                 10.0.0.1     <none>        443/TCP              7d
+    productpage                10.0.0.120   <none>        9080/TCP             6m
+    ratings                    10.0.0.15    <none>        9080/TCP             6m
+    reviews                    10.0.0.170   <none>        9080/TCP             6m
+
 	kubectl get pods
+
+	NAME                                        READY     STATUS    RESTARTS   AGE
+    details-v1-1520924117-48z17                 2/2       Running   0          6m
+    productpage-v1-560495357-jk1lz              2/2       Running   0          6m
+    ratings-v1-734492171-rnr5l                  2/2       Running   0          6m
+    reviews-v1-874083890-f0qf0                  2/2       Running   0          6m
+    reviews-v2-1343845940-b34q5                 2/2       Running   0          6m
+    reviews-v3-1813607990-8ch52                 2/2       Running   0          6m
 	```
 
 ### Step 2: Configure Ingress
