@@ -44,7 +44,7 @@ Perform the following steps to create a new PKS cluster that uses a medium load 
 	* `NETWORK-PROFILE-NAME` is the name of the network profile you created that implements a medium load balancer.
 
 	For example:
-  ```
+  	```
 	$ pks create-cluster k8s-with-istio \
 	--external-hostname k8s-with-istio \
 	--plan large \
@@ -281,7 +281,7 @@ Perform the following steps to uninstall Istio:
 	kubectl delete -f $HOME/istio.yaml
 	```
 
-1. Delete the CRDs with the following command:
+2. Delete the CRDs with the following command:
 
 	```
 	kubectl delete -f install/kubernetes/helm/istio/templates/crds.yaml -n istio-system
