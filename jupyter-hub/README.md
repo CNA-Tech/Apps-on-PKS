@@ -68,8 +68,10 @@ kubectl create clusterrolebinding tiller-clusterrolebinding --clusterrole=cluste
 
 From a Linux machine, generate a random hex string to be used as a security token by Jupyter Hub.
 
-    `openssl rand -hex 32`
-    `c46350ed823f9433312d110bf39700a765ee3cbc08f0220dff86cc63a570d3be`
+```
+openssl rand -hex 32
+  c46350ed823f94.......20dff86cc63a570d3be
+```
 
 
 We are going to edit update the values.yaml for our jupyter-hub HELM package installation to include the hex string above.
@@ -97,8 +99,10 @@ proxy:
 
 * Add the jupyterhub HELM Repo
 
-    `helm repo add jupyterhub https://jupyterhub.github.io/helm-chart/` 
-    `helm repo update`
+```
+helm repo add jupyterhub https://jupyterhub.github.io/helm-chart/
+helm repo update
+```
 
 * Install Jupyter Hub using helm chart and reference the values.yml
 
