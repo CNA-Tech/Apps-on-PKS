@@ -153,6 +153,8 @@ kubectl get all -n jupyter
 
 * You can access the sample notebooks in the "data-analysis/jupyter-hub/" folder.
 
-** To run the Machine Learning Notebook Click on the "ml-stock-predictor-knn-v4.ipynb"  file.  You can run each cell individually by clicking the >| Run  button on each cell.  To run all cells from Top to Bottom (The entire program) you can go to the Menu --> Cell --> Run All.
+* To run the Machine Learning Notebook, Click on the "ml-stock-predictor-knn-v4.ipynb"  file.  You can run each cell individually by clicking the >| Run  button on each cell.  To run all cells from Top to Bottom (The entire program) you can go to the Menu --> Cell --> Run All.
+
+* To run Pandas Data Analysis notebook, Click on the "industry-revenue-analysis.ipynb"  file.  You can run each cell individually by clicking the >| Run  button on each cell.  To run all cells from Top to Bottom (The entire program) you can go to the Menu --> Cell --> Run All.
  
 
