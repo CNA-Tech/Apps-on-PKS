@@ -72,7 +72,7 @@ From a Linux machine, generate a random hex string to be used as a security toke
     `c46350ed823f9433312d110bf39700a765ee3cbc08f0220dff86cc63a570d3be`
 
 
-We are going to edit / update the values.yaml for our jupyter-hub HELM package installation.
+We are going to edit update the values.yaml for our jupyter-hub HELM package installation to include the hex string above.
 
 ```yaml
 singleuser:
@@ -85,7 +85,7 @@ singleuser:
   lifecycleHooks:
     postStart:
       exec:
-        command: ["/usr/bin/git", "clone", "https://github.com/tkrausjr/finance-analysis.git", "finance-analysis"]
+        command: ["/usr/bin/git", "clone", "https://github.com/CNA-Tech/Apps-on-PKS.git", "data-analysis"]
 proxy:
   secretToken: "--put-your-randome-hex-value-here--"
 ```
