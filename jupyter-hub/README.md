@@ -1,5 +1,13 @@
 # jupyter-hub_on_PKS
-Instructions to get Jupyter Hub deployed and running on Kubernetes Cluster operated by PKS
+Instructions for deploying Jupyter Hub on Kubernetes Cluster operated by PKS.
+
+## Using Jupyter Notebooks on Jupyter Hub
+* Following the instructions will deploy Jupyter Hub and a proxy server on a Kubernetes cluster operated by PKS
+* Each user that accesses Jupyter will have a workspace that will automatically checkout this Git repo and clone it into each single users workspace.
+* This Repo also containers two Jupyter Notebooks in the "data-analysis" folder for jupyter.
+** One is for data analysis of historical financial data organized by Industry
+** The other is for Machine Learning based on Revenue data from Public Financial Statements.
+
 
 ## Assumptions:
 * PKS v1.2+
