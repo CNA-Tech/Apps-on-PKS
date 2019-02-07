@@ -1,13 +1,16 @@
-# prometheus_on_PKS
-Instructions to get Prometheus deployed on Kubernetes Cluster operated by PKS
+# Installing Prometheus in a Kubernetes Cluster created by PKS with NSX-T Using Helm
+This topic describes how to install [Prometheus](https://prometheus.io/) in a Kubernetes cluster created by PKS with NSX-T using Helm.
 
-## Assumptions:
+## Prerequisites:
+Berfore performaing the procedure in this topic, you must have installed and cofigured the following: 
+
 * PKS v1.2+
 * NSX-T v2.3+
-* A PKS cluster with at least 1 master and 1 worker nodes
-* Ensure you have a storage class created by the name 'default', this storage class will be used by the Persistent Volume claims needed for stateful sets.
- 
-* To add a storage class, copy the following into a file and name it pks-storageclass.yaml
+* A Kubernetes cluster created with PKS with at least 1 master and 1 worker nodes
+* Ensure you have a storage class created with the name 'default', this storage class will be used by the Persistent Volume claims needed for stateful sets.
+
+
+To add the necessary storage class, create a file named `pks-storageclass.yaml` by adding the following section:
 ```yaml
 kind: StorageClass
 apiVersion: storage.k8s.io/v1
@@ -18,16 +21,19 @@ metadata:
 provisioner: kubernetes.io/vsphere-volume
 parameters:
   diskformat: thin  
-  
-kubectl apply -f pks-storageclass.yaml
- ```
+```
+
+Then apply the configuration using the following command:
+
+  `kubectl apply -f pks-storageclass.yaml`
+
 ## Helm
 
-Helm is the package manager for Kubernetes that runs on a local machine with kubectl access to the Kubernetes cluster. The installation process for Prometheus and the Certificate Manager leverage Helm charts available on the public Helm repo. For more information, see using [Helm with PKS](https://docs.pivotal.io/runtimes/pks/1-3/helm.html).  
+Helm is the package manager for Kubernetes that runs on a local machine with `kubectl` access to the Kubernetes cluster. The installation process for Prometheus and the Certificate Manager leverage Helm charts available on the public Helm repo. For more information, see [Using Helm with PKS](https://docs.pivotal.io/runtimes/pks/1-3/helm.html).  
 
 * Download and install the [Helm CLI](https://github.com/helm/helm/releases) if you haven't already done so.  
 
-* Create a service account for Tiller and bind it to the cluster-admin role. Copy the following into a file and name it rbac-config.yaml
+* Create a service account for Tiller and bind it to the cluster-admin role. Copy the following into a file named `rbac-config.yaml`
 
 ```yaml
 apiVersion: v1
@@ -48,13 +54,18 @@ roleRef:
   kind: ClusterRole
   name: cluster-admin
   apiGroup: rbac.authorization.k8s.io
- 
-kubectl apply -f rbac-config.yaml
- or 
-  
-kubectl create serviceaccount --namespace kube-system tiller
-kubectl create clusterrolebinding tiller-clusterrolebinding --clusterrole=cluster-admin --serviceaccount=kube-system:tiller
-  ```
+ ```
+
+* Apply the configuration using the following command: 
+
+    `kubectl apply -f rbac-config.yaml`
+
+* Alternatively, you can use:
+
+    `kubectl create serviceaccount --namespace kube-system tiller`
+    
+    `kubectl create clusterrolebinding tiller-clusterrolebinding --clusterrole=cluster-admin --serviceaccount=kube-system:tiller`
+
 
 * Deploy Helm using the service account by running the following command:
 
