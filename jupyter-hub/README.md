@@ -147,8 +147,12 @@ kubectl get all -n jupyter
 
 **Note**:  Jupyter Hub Proxy Server will have an External IP for the Service.
 
-* To use JupyterHub, enter the external IP for the proxy-public service in to a browser. you You can access the Jupyter Hub UI using http://10.51.0.68.  JupyterHub is running with a default dummy authenticator so entering any username and password combination will let you enter the hub.
+## Jupyter Hub Usage for Data Analysis
 
-* To access the newer JupyterLab UI you can use http://10.51.0.68/lab/.
+* To use JupyterHub, enter the external IP for the proxy-public service in to a browser. In this example, you would access the Jupyter Hub UI using http://10.51.0.68.  JupyterHub is running with a default dummy authenticator so entering any username and password combination will let you enter the hub.
+
+* You can access the sample notebooks in the "data-analysis/jupyter-hub/" folder.
+
+** To run the Machine Learning Notebook Click on the "ml-stock-predictor-knn-v4.ipynb"  file.  You can run each cell individually by clicking the >| Run  button on each cell.  To run all cells from Top to Bottom (The entire program) you can go to the Menu --> Cell --> Run All.
  
 
