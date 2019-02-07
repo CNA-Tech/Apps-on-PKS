@@ -1,0 +1,6 @@
+# No cached ipynotebook runs
+/.ipynb_checkpoints
+
+# OSX Files
+
+.DS_Store
