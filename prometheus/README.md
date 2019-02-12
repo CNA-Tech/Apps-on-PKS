@@ -71,6 +71,8 @@ subjects:
 
     `helm init --service-account tiller`
 
+**Note**: For added security, consider enable SSL between [Helm and Tiller](https://docs.helm.sh/using_helm/#using-ssl-between-helm-and-tiller).
+
 ## Certificate Manager
 
 The cert-manager is a native Kubernetes certificate management controller.  The cert-manager can help with issuing certificates and will ensure certificates are valid and up to date; it will also attempt to renew certificates at a configured time before expiry. The documentation is available [here](https://docs.cert-manager.io/en/latest/).
@@ -89,6 +91,10 @@ Start by creating the cert-manager CustomResourceDefinition (CRD):
 
   `helm install --name cert-manager --namespace cert-manager --version v0.6.0 stable/cert-manager`
 
+* We will deploy Promethus components in the monitoring namespace.  Let's create a monitoring namespace :
+
+    `kubectl create namespace monitoring`
+
 * Generate cert and upload as secret into your PKS cluster (scoped to a namespace).  
 ```
     #Generate a signing key pair
@@ -104,7 +110,7 @@ Start by creating the cert-manager CustomResourceDefinition (CRD):
     kubectl create secret tls ca-key-pair \
         --cert=ca.crt \
         --key=ca.key \
-        --namespace=default
+        --namespace=monitoring
 ```
 
   
@@ -119,7 +125,7 @@ apiVersion: certmanager.k8s.io/v1alpha1
 kind: Issuer
 metadata:
   name: ca-issuer
-  namespace: default
+  namespace: monitoring
 spec:
   ca:
     secretName: ca-key-pair
@@ -135,7 +141,7 @@ apiVersion: certmanager.k8s.io/v1alpha1
 kind: Certificate
 metadata:
   name: example-com
-  namespace: default
+  namespace: monitoring
 spec:
   secretName: example-com-tls
   issuerRef:
@@ -174,7 +180,7 @@ root@cli-vm:~/app#
 Confirm self-signed and signed certificates are loaded in key store:
 
 ```
-root@cli-vm:~/app# kubectl get secret | grep kubernetes.io/tls
+root@cli-vm:~/app# kubectl get secret -n monitoring | grep kubernetes.io/tls
 ca-key-pair                                        kubernetes.io/tls                     2         1d
 example-com-tls                                    kubernetes.io/tls                     3         1d
 root@cli-vm:~/app#
@@ -182,7 +188,7 @@ root@cli-vm:~/app#
 
 Retrieve the signed TLS key pair
 
-  `root@cli-vm:~/app#kubectl get secret example-com-tls -o yaml`
+  `root@cli-vm:~/app#kubectl get secret example-com-tls -n monitoring -o yaml`
 
 
 ## Install Prometheus
@@ -216,6 +222,8 @@ grafana:
     enabled: true
     annotations:
       kubernetes.io/ingress.class: nginx
+      certmanager.k8s.io/issuer: ca-issuer
+      kubernetes.io/tls-acme: "true"
     hosts:
       - grafana.test.example.com
     tls:
@@ -282,14 +290,14 @@ prometheus-prometheus-oper-prometheus     ClusterIP      10.100.200.109   <none>
 
 * Outside of Grafana, Prometheus services are not accessible outside of the cluster.  If you want to reach Prometheus externally (from your desktop as an example), you can use port forwarding
  
-    `kubectl port-forward prometheus-prometheus-oper-prometheus -n monitoring 9090:9090`
+    `kubectl port-forward prometheus-prometheus-prometheus-oper-prometheus-0 -n monitoring 9090:9090`
  
  Once port-forwarding is enabled, you can access the promethus UI using http://127.0.0.1:9090
  
  
 * For the Grafana dashboard access, the ingress controller is set up to route based on the incoming URL.  To reach the correct Grafana endpoint, we must use the Fully Qualifeid Domain Name (FQDN) and file path to the ingress controller. In our example, FQDN (grafana.test.example.com) must be resolvable to an IP.  To find the external IP address of the Grafana service
 
-    `kubectl get svc -n monitoring | grep  quickstart-nginx-ingress-controller | awk '{print $4}' | awk -F , '{print $1}'`
+    `kubectl get svc | grep  quickstart-nginx-ingress-controller | awk '{print $4}' | awk -F , '{print $1}'`
 	
 In a production environment, you would register external IP to FQDN mapping in a DNS server. Alternatively, for a pre-production development environment, you can create a temporary lookup entry in your /etc/hosts file.
 
