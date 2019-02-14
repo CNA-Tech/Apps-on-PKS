@@ -4,9 +4,9 @@ Instructions for deploying Jupyter Hub on Kubernetes Cluster operated by PKS.
 ## Accessing Data Analaysis Jupyter Notebooks 
 * Following the instructions will deploy Jupyter Hub and a proxy server on a Kubernetes cluster operated by PKS
 * Each user that accesses Jupyter will have a workspace that will automatically checkout this Git repo and clone it into each single users workspace.
-* This Repo also contains two Jupyter Notebooks in the "data-analysis/jupyter-hub/" folder for jupyter.
-1. industry-revenue-analysis.ipynb is for data analysis of historical financial data organized by Industry amd leverages Pandas.
-2. ml-stock-predictor-knn-v4.ipynb is for Machine Learning based on Revenue data from Public Financial Statements and leverages scikit-learn.
+* This Repo also contains two functioning Jupyter Notebooks in the "data-analysis/jupyter-hub/" folder for jupyter.
+    * industry-revenue-analysis.ipynb is for data analysis of historical financial data organized by Industry amd leverages Pandas.
+    * ml-stock-predictor-knn-v4.ipynb is for Machine Learning based on Revenue data from Public Financial Statements and leverages scikit-learn.
 
 
 ## Assumptions:
