@@ -2,7 +2,7 @@
 This topic describes how to install [Prometheus](https://prometheus.io/) in a Kubernetes cluster created by PKS with NSX-T using Helm.
 
 ## Prerequisites:
-Berfore performaing the procedure in this topic, you must have installed and cofigured the following: 
+Berfore performing the procedure in this topic, you must have installed and configured the following: 
 
 * PKS v1.2+
 * NSX-T v2.3+
@@ -42,18 +42,18 @@ metadata:
   name: tiller
   namespace: kube-system
 ---
-kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
 metadata:
-  name: tiller-clusterrolebinding
-subjects:
-- kind: ServiceAccount
   name: tiller
-  namespace: kube-system
 roleRef:
+  apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
   name: cluster-admin
-  apiGroup: rbac.authorization.k8s.io
+subjects:
+  - kind: ServiceAccount
+    name: tiller
+    namespace: kube-system
  ```
 
 * Apply the configuration using the following command: 
@@ -71,29 +71,23 @@ roleRef:
 
     `helm init --service-account tiller`
 
-## Cert Manager
+## Certificate Manager
 
-The cert-manager is a native Kubernetes certificate management controller.  The cert-manager can help with issuing certificates and will ensure certificates are valid and up to date; it will also attempt to renew certificates at a configured time before expiry. Start by install the cert-manager CRD:
+The cert-manager is a native Kubernetes certificate management controller.  The cert-manager can help with issuing certificates and will ensure certificates are valid and up to date; it will also attempt to renew certificates at a configured time before expiry. The documentation is available [here](https://docs.cert-manager.io/en/latest/).
 
-* To Install the Kubernetes cert-manager CRDs:
+Start by creating the cert-manager CustomResourceDefinition (CRD):
 
-```
-    kubectl apply
-       -f https://raw.githubusercontent.com/jetstack/cert-manager/release-0.6/deploy/manifests/00-crds.yaml
-```
+* Create the Kubernetes cert-manager CRDs:
+
+  `kubectl apply -f https://raw.githubusercontent.com/jetstack/cert-manager/release-0.6/deploy/manifests/00-crds.yaml`
 
 * Update helm repository cache
 
-    `helm repo update`
+  `helm repo update`
 
 * Install cert-manager with Helm
-```
-helm install \
-   --name cert-manager \
-   --namespace cert-manager \
-   --version v0.6.0 \
-   stable/cert-manager
-```
+
+  `helm install --name cert-manager --namespace cert-manager --version v0.6.0 stable/cert-manager`
 
 * Generate cert and upload as secret into your PKS cluster (scoped to a namespace).  
 ```
@@ -114,11 +108,11 @@ helm install \
 ```
 
   
-**Note**: Issuer can be namespace(Kind: Issuer) or cluster(Kind: ClusterIssuer) scoped. We will use namespace scoped issuer in this example.
+**Note**: Issuer can be namespace scoped (`kind: Issuer`) or cluster scoped (`kind: ClusterIssuer`). We will use namespace scoped issuer in this example.
 
-**Note**: Above is an example only.  You should follow your enterprise processes for Certificate management.   
+**Note**: The sample above is provided as an example only.  You should follow your enterprise processes for Certificate management.   
 
-* To create a certificate issuer, copy / paste the below YAML file as issuer.yaml
+* To create a certificate issuer, copy / paste the YAML sample below in a file named issuer.yaml
 
 ```yaml
 apiVersion: certmanager.k8s.io/v1alpha1
@@ -129,11 +123,12 @@ metadata:
 spec:
   ca:
     secretName: ca-key-pair
-    
-kubectl create -f issuer.yaml
 ```
+Then apply the configuration with:
 
-* In order to obtain a Certificate, we must create a Certificate resource in the same namespace as the Issuer.  Issuer is a namespaced resource in this example.  To obtain a signed Certificate, copy / paste the following into a file and name it as desired-cert.yaml. 
+  `kubectl create -f issuer.yaml`
+
+* In order to obtain a Certificate, we must create a Certificate resource in the same namespace as the Issuer.  In this example, the Issuer is a namespaced resource.  To obtain a signed Certificate, copy / paste the following into a file named desired-cert.yaml. 
 
 ```yaml
 apiVersion: certmanager.k8s.io/v1alpha1
@@ -153,18 +148,20 @@ spec:
   - VMware
   dnsNames:
   - example.com
-
-kubectl create -f desired-cert.yaml
 ```
-**Note**: Above is an example only.  You should follow your enterprise processes for Certificate management.
+Then apply the configuration with: 
 
-**Note**: Actual namespace you use will be based on design requirements. We are using namespace default in this example as this namespace is available in all PKS deployments.   
+  `kubectl create -f desired-cert.yaml`
 
-**Note**: secretName in the certificate request will be referenced by the ingress controller.
+**Note**: The sample above is provided as an example only.  You should follow your enterprise processes for Certificate management.
 
-## Cert Manager Validation 
+**Note**: The namespace you use will be based on design requirements. We are using the `default` namespace in this example as this namespace is available in all PKS deployments.   
 
-To verify your installation has complete:
+**Note**: `secretName` in the certificate request will be referenced by the ingress controller.
+
+### Certificate Manager Validation 
+
+To verify your installation was successful:
 ```
 root@cli-vm:~/app# kubectl get pod -n cert-manager
 NAME                                   READY     STATUS      RESTARTS   AGE
@@ -174,24 +171,23 @@ cert-manager-webhook-d85fcf8cf-nln8v   1/1       Running     0          1d
 root@cli-vm:~/app#
 ```
 
-Confirm self-signed and signed cert are loaded in key store:
+Confirm self-signed and signed certificates are loaded in key store:
 
 ```
 root@cli-vm:~/app# kubectl get secret | grep kubernetes.io/tls
 ca-key-pair                                        kubernetes.io/tls                     2         1d
 example-com-tls                                    kubernetes.io/tls                     3         1d
 root@cli-vm:~/app#
+``` 
 
 Retrieve the signed TLS key pair
 
-root@cli-vm:~/app#kubectl get secret example-com-tls -o yaml
-
-```
+  `root@cli-vm:~/app#kubectl get secret example-com-tls -o yaml`
 
 
 ## Install Prometheus
 
-We are going to create the following customization file so our Prometheus deployment will leverage persistent volume for metrics and expose Grafana service to external users using an ingress controller, with SSL termination for added security.  Cert manager will issue and maintain the certificate required by the ingress controller. Core Prometheus services will not be externally accessible unless explicit port forwarding is enabled.  Copy following into a file and name it custom.yaml:
+We are going to customize our Prometheus deployment to leverage persistent volumes for metrics and expose Grafana service to external users using an ingress controller, with SSL termination for added security. cert-manager will issue and maintain the certificate required by the ingress controller. Core Prometheus services will not be externally accessible unless explicit port forwarding is enabled. Copy the following into a file and name it `custom.yaml`:
 
 ```yaml
 alertmanager:
@@ -232,29 +228,29 @@ grafana:
     size: 1Gi
 ```
 
-**Note**: secretName must match name specificied in the certificate sign request.  See desired-cert.yaml from prior steps.
+**Note**: `secretName` must match the name specificied in the certificate signing request.  See `desired-cert.yaml` from prior steps.
 
 * Install a nginx ingress controller using helm
 
     `helm install stable/nginx-ingress --name quickstart`
     
-* We will deploy Promethus components in the monitoring namespace.  Let's create a monitoring namespace : 
+* We will deploy Promethus components in the monitoring namespace.  First, create the `monitoring` namespace : 
 
     `kubectl create namespace monitoring`  
     
   
-* Install Prometheus Operator using helm chart and reference the custom.yml
+* Install the Prometheus Operator using helm chart and reference the custom.yml
 
     `helm install stable/prometheus-operator --name prometheus --namespace monitoring -f custom.yaml`  
     
-    make sure following repo is available if helm install fails     
+    If helm install fails, make sure the following repository is available     
     `root@cli-vm:~/helm_rback# helm repo list`    
     `NAME    URL`  
     `stable  https://kubernetes-charts.storage.googleapis.com`
     
 ## Prometheus Validation
 
-To verify your Prometheus deployment is successful, following PODS must be running:
+To verify that your Prometheus deployment was successful, check that the following PODS are running:
 
 ```
 root@cli-vm:~/app# kubectl get pods -n monitoring
@@ -268,7 +264,7 @@ prometheus-prometheus-node-exporter-lndjb                1/1       Running   0  
 prometheus-prometheus-oper-operator-58b59489fc-96m9m     1/1       Running   0          1d
 prometheus-prometheus-prometheus-oper-prometheus-0       3/3       Running   1          1d
 ```
-**Note**:  Number of node exporters PODS would vary depending on the number of worker nodes in the cluster.
+**Note**:  The number of node exporter PODS will vary depending on the number of worker nodes in the cluster.
 
 ```
 root@cli-vm:~/app# kubectl get svc -n monitoring
@@ -291,10 +287,10 @@ prometheus-prometheus-oper-prometheus     ClusterIP      10.100.200.109   <none>
  Once port-forwarding is enabled, you can access the promethus UI using http://127.0.0.1:9090
  
  
-* For the Grafana dashboard access, the ingress controller is set up to route based on the incoming URL.  To reach the correct Grafana endpoint, we must pass the entire FQDN and file path to the ingress controller.   FQDN (grafana.test.example.com) must be resolvable to an IP.  To find the external IP address of the Grafana service
+* For the Grafana dashboard access, the ingress controller is set up to route based on the incoming URL.  To reach the correct Grafana endpoint, we must use the Fully Qualifeid Domain Name (FQDN) and file path to the ingress controller. In our example, FQDN (grafana.test.example.com) must be resolvable to an IP.  To find the external IP address of the Grafana service
 
     `kubectl get svc -n monitoring | grep  quickstart-nginx-ingress-controller | awk '{print $4}' | awk -F , '{print $1}'`
 	
-In a production environment, you would register external IP to FQDN mapping in a DNS server. In a pre-production development environment, it's easiest to create a temporary lookup entry in your /etc/hosts file.
+In a production environment, you would register external IP to FQDN mapping in a DNS server. Alternatively, for a pre-production development environment, you can create a temporary lookup entry in your /etc/hosts file.
 
-* paste `https://grafana.test.example.com/` into a web browser -  Username/Password: admin/VMware1!.
+* To access Grafana, enter `https://grafana.test.example.com/` in a web browser -  Username/Password: admin/VMware1!.
