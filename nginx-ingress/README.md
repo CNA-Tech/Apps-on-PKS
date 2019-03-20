@@ -49,7 +49,7 @@ The status of ingress-nginx POD is Running which means the nginx ingress control
 Run the following command to get the nginx-ingress IP
 
 ```
-$ kubectl get svc
+$ kubectl get svc -n ingress-nginx
 
     NAME            TYPE           CLUSTER-IP       EXTERNAL-IP                 PORT(S)                      AGE
     ingress-nginx   LoadBalancer   10.100.200.82    100.64.16.5,172.26.80.100   80:30212/TCP,443:31995/TCP   18h
