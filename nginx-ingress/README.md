@@ -52,9 +52,7 @@ Run the following command to get the nginx-ingress IP
 $ kubectl get svc
 
     NAME            TYPE           CLUSTER-IP       EXTERNAL-IP                 PORT(S)                      AGE
-    coffee-svc      ClusterIP      10.100.200.52    <none>                      80/TCP                       4m29s
     ingress-nginx   LoadBalancer   10.100.200.82    100.64.16.5, **172.26.80.100**   80:30212/TCP,443:31995/TCP   18h
-    tea-svc         ClusterIP      10.100.200.203   <none>                      80/TCP                       4m29s
 ```
 Note down the external IP of the ingress-nginx for your environment. In this case, the nginx ingress LB can be reached at 172.26.80.100 and is listening on port 80 and 443.
 
