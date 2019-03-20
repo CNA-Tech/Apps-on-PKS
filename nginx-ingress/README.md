@@ -29,7 +29,7 @@ $ kubectl apply -f install/mandatory.yaml
 
 Then create the nginx service
 ```
-$ kubectl apply -f nginx-service.yaml
+$ kubectl apply -f install/nginx-service.yaml
 ```
 This will expose the nginx POD to NSX-T using type load balancer. After issuing this command, you should be able to see 2 virtual servers in the same k8s cluster's Load Balanncer, with the same IP. One is for http, listening on port 80 and the other virtual server is for https traffic, listening on port 443.
 
