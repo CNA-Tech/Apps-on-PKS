@@ -7,10 +7,10 @@ metadata:
 spec:
   tls:
   - hosts:
-    - cafe.tpm.local
+    - cafe.lab.local
     secretName: cafe-secret
   rules:
-  - host: cafe.tpm.local
+  - host: cafe.lab.local
     http:
       paths:
       - path: /tea
