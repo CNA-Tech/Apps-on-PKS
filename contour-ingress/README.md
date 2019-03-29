@@ -15,7 +15,7 @@ Contour is an Ingress controller for Kubernetes that works by deploying the Envo
 
 ## Install Contour
 
-Follow the steps below to run Contour on k8s, side by side NSX-T. Contour will be exposed outside using virtual servers on NSX-T but Contour will be performing the ingress functionality. NSX-T will be acting as a L4 LB and will just be forwarding all the traffic to Contour.
+Follow the steps below to run Contour on k8s, side by side NSX-T. Contour will use NSX-T LB's virtual server to expose Contour as a service type LoadBalancer. Contour will be performing the ingress functionality. NSX-T will be acting as a L4 LB and will just be forwarding all the traffic to Contour.
 
 
 ### Step 1: Create the Contour Deployment and the Service
