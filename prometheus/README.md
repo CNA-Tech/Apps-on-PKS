@@ -253,7 +253,7 @@ grafana:
     size: 20Gi
 ```
 
-**Note**: `secretName` must match the name specificied in the certificate signing request.  See `desired-cert.yaml` from prior steps.
+**Note**: `secretName` must match the name specified in the certificate signing request.  See `desired-cert.yaml` from prior steps.
 
 * Install a nginx ingress controller using helm
 
