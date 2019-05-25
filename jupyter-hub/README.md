@@ -34,7 +34,7 @@ kubectl apply -f pks-storageclass.yaml
  ```
 ## Helm
 
-Helm is the package manager for Kubernetes that runs on a local machine with kubectl access to the Kubernetes cluster. The installation process for Prometheus and the Certificate Manager leverage Helm charts available on the public Helm repo. For more information, see using [Helm with PKS](https://docs.pivotal.io/runtimes/pks/1-3/helm.html).  
+Helm is the package manager for Kubernetes that runs on a local machine with kubectl access to the Kubernetes cluster. The installation process for Jupyter- Hub leverage Helm charts available on the public Helm repo. For more information, see using [Helm with PKS](https://docs.pivotal.io/runtimes/pks/1-3/helm.html).  
 
 * Download and install the [Helm CLI](https://github.com/helm/helm/releases) if you haven't already done so.  
 
