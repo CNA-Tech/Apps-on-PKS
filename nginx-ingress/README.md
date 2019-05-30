@@ -4,10 +4,11 @@
 
 Before performing the procedures in this topic, you must have installed and configured the following:
 
-- PKS v1.2+
-- NSX-T v2.3+
-- A PKS plan with at least 1 master and 2 worker nodes
-- Make sure that the k8s cluster is deployed with priviliged access. Deployment of nginx will fail otherwise
+- PKS v1.2+.
+- NSX-T v2.3+.
+- A PKS plan with at least 1 master and 2 worker nodes.
+- Make sure that the k8s cluster is deployed with priviliged access. Deployment of nginx will fail otherwise.
+- Make sure that the k8s cluster is deployed with SecurityContextDeny disabled. Deployment of nginx will fail otherwise.
 
 
 ## Install nginx
