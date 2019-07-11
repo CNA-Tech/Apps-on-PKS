@@ -75,6 +75,7 @@ subjects:
   ```
 kubectl apply -f rbac-config.yaml
   ```
+
 * Alternatively, you can use:
 
   ```
@@ -145,17 +146,22 @@ kubectl create namespace monitoring
 * Generate cert and upload as secret into your PKS cluster (scoped to a namespace).  
 
   * Generate a signing key pair
+
 ```
     openssl genrsa -out ca.key 2048
 ```
+
   * Create a self signed Certificate
+
 ```
     COMMON_NAME=example.com
     openssl req -x509 -new -nodes -key ca.key \
         -subj "/CN=${COMMON_NAME}" -days 3650 \
         -reqexts v3_req -extensions v3_ca -out ca.crt
 ```
+
   * store cert in a Kubernetes Secret resource.
+
 ```
     kubectl create secret tls ca-key-pair \
         --cert=ca.crt \
@@ -223,6 +229,7 @@ kubectl create -f desired-cert.yaml`
 ### Certificate Manager Validation
 
 Verify your installation was successful:
+
 ```
 root@cli-vm:~/app# kubectl get pod -n cert-manager
 NAME                                       READY   STATUS    RESTARTS   AGE
@@ -240,11 +247,11 @@ example-com-tls                                    kubernetes.io/tls            
 root@cli-vm:~/app#
 ```
 
-Retrieve the signed TLS key pair
+Retrieve the signed TLS key pair:
 
-  ```
+```
 root@cli-vm:~/app#kubectl get secret example-com-tls -n monitoring -o yaml
-  ```
+```
 
 ## Prometheus
 
