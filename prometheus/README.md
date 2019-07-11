@@ -103,31 +103,31 @@ The cert-manager is a native Kubernetes certificate management controller.  The 
 kubectl apply -f https://raw.githubusercontent.com/jetstack/cert-manager/release-0.8/deploy/manifests/00-crds.yaml`
   ```
 
-  * Create the namespace for cert-manager
+  2. Create the namespace for cert-manager
 
   ```
 kubectl create namespace cert-manager
   ```
 
-  * Label the cert-manager namespace to disable resource validation
+  3. Label the cert-manager namespace to disable resource validation
 
   ```
 kubectl label namespace cert-manager certmanager.k8s.io/disable-validation=true
   ```
 
-  * Add the Jetstack Helm repository
+  4. Add the Jetstack Helm repository
 
   ```
 helm repo add jetstack https://charts.jetstack.io
   ```
 
-  * Update your local Helm chart repository cache
+  5. Update your local Helm chart repository cache
 
   ```
 helm repo update
   ```
 
-  *  Deploy the cert-manager Helm chart
+  6. Deploy the cert-manager Helm chart
 
   ```
 helm install \
@@ -137,45 +137,39 @@ helm install \
 jetstack/cert-manager
   ```
 
-  * Promethus components will be deployed in the monitoring namespace.   Pre-create a monitoring namespace :
+  7. Promethus components will be deployed in the monitoring namespace. Pre-create a monitoring namespace:
 
   ```
 kubectl create namespace monitoring
   ```
 
-  * Generate cert and upload as secret into your PKS cluster (scoped to a namespace).  
+  8. Generate cert and upload as secret into your PKS cluster (scoped to a namespace).  
 
-    * Generate a signing key pair
+    1. Generate a signing key pair
 
-```
-    openssl genrsa -out ca.key 2048
-```
+            openssl genrsa -out ca.key 2048
 
-    * Create a self signed Certificate
+    2. Create a self signed Certificate
 
-```
-    COMMON_NAME=example.com
-    openssl req -x509 -new -nodes -key ca.key \
-        -subj "/CN=${COMMON_NAME}" -days 3650 \
-        -reqexts v3_req -extensions v3_ca -out ca.crt
-```
+            COMMON_NAME=example.com
+            openssl req -x509 -new -nodes -key ca.key \
+            -subj "/CN=${COMMON_NAME}" -days 3650 \
+            -reqexts v3_req -extensions v3_ca -out ca.crt
 
-    * store cert in a Kubernetes Secret resource.
+    3. Store cert in a Kubernetes Secret resource.
 
-```
-    kubectl create secret tls ca-key-pair \
-        --cert=ca.crt \
-        --key=ca.key \
-        --namespace=monitoring
-```
+            kubectl create secret tls ca-key-pair \
+            --cert=ca.crt \
+            --key=ca.key \
+            --namespace=monitoring
 
   **Note**: Issuer can be namespace scoped (`kind: Issuer`) or cluster scoped (`kind: ClusterIssuer`). We will use namespace scoped issuer in this example.
 
   **Note**: The sample above is provided as an example only.  You should follow your enterprise processes for Certificate management or adapt to use a CA like [Let's Encrypt](https://docs.cert-manager.io/en/latest/tasks/issuers/setup-acme/index.html).   
 
-  * To create a certificate issuer, copy / paste the YAML sample below in a file named `issuer.yaml`
+  9. To create a certificate issuer, copy / paste the YAML sample below in a file named `issuer.yaml`.
 
-  ```yaml
+```yaml
 apiVersion: certmanager.k8s.io/v1alpha1
 kind: Issuer
 metadata:
@@ -184,17 +178,17 @@ metadata:
 spec:
   ca:
     secretName: ca-key-pair
+```
+
+  10. Apply the configuration with:
+
+  ```
+kubectl create -f issuer.yaml
   ```
 
-    * Apply the configuration with:
+  11. In order to obtain a Certificate, create a Certificate resource in the same namespace as the Issuer.  In this example, the Issuer is a namespaced resource.  To obtain a signed Certificate, copy / paste the following into a file named `desired-cert.yaml`.
 
-    ```
-kubectl create -f issuer.yaml`
-    ```
-
-  * In order to obtain a Certificate, create a Certificate resource in the same namespace as the Issuer.  In this example, the Issuer is a namespaced resource.  To obtain a signed Certificate, copy / paste the following into a file named `desired-cert.yaml`.
-
-  ```yaml
+```yaml
 apiVersion: certmanager.k8s.io/v1alpha1
 kind: Certificate
 metadata:
@@ -212,13 +206,11 @@ spec:
   - VMware
   dnsNames:
   - example.com
-  ```
+```
 
-    * Then apply the configuration with:
+  * Apply the configuration with:
 
-    ```
-kubectl create -f desired-cert.yaml`
-    ```
+         kubectl create -f desired-cert.yaml
 
 **Note**: The sample above is provided as an example only.  You should follow your enterprise processes for Certificate management.
 
@@ -544,9 +536,9 @@ kubectl create -f https://raw.githubusercontent.com/coreos/prometheus-operator/m
 
   * Install the Prometheus Operator using helm chart and reference the `custom.yaml` but disable the CRD provisioning.
 
-    ```
+  ```
 helm install stable/prometheus-operator --name prometheus --namespace monitoring -f custom.yaml --set prometheusOperator.createCustomResource=false
-    ```  
+  ```  
 
 
 ## Prometheus Validation
@@ -581,11 +573,11 @@ prometheus-prometheus-oper-prometheus     ClusterIP   10.100.200.213   <none>   
 ```
 **Note**:  Prometheus services do not have External IPs Mapped.
 
-    * Outside of Grafana, Prometheus services are not accessible outside of the cluster.  To reach Prometheus externally (from a desktop for example), use port forwarding:
+  * Outside of Grafana, Prometheus services are not accessible outside of the cluster.  To reach Prometheus externally (from a desktop for example), use port forwarding:
 
-    ```
+  ```
 kubectl port-forward prometheus-prometheus-prometheus-oper-prometheus-0 -n monitoring 9090:9090
-    ```
+  ```
 
  Once port-forwarding is enabled, access the Prometheus UI using http://127.0.0.1:9090
 
