@@ -70,13 +70,13 @@ subjects:
     namespace: kube-system
  ```
 
-* Apply the configuration using the following command:
+  * Apply the configuration using the following command:
 
   ```
 kubectl apply -f rbac-config.yaml
   ```
 
-* Alternatively, you can use:
+  * Alternatively, you can use:
 
   ```
 kubectl create serviceaccount --namespace kube-system tiller`
@@ -97,37 +97,37 @@ The cert-manager is a native Kubernetes certificate management controller.  The 
 
 
 
-1. Install the CustomResourceDefinition resources separately
+  1. Install the CustomResourceDefinition resources separately
 
   ```
 kubectl apply -f https://raw.githubusercontent.com/jetstack/cert-manager/release-0.8/deploy/manifests/00-crds.yaml`
   ```
 
-* Create the namespace for cert-manager
+  * Create the namespace for cert-manager
 
   ```
 kubectl create namespace cert-manager
   ```
 
-* Label the cert-manager namespace to disable resource validation
+  * Label the cert-manager namespace to disable resource validation
 
   ```
 kubectl label namespace cert-manager certmanager.k8s.io/disable-validation=true
   ```
 
-* Add the Jetstack Helm repository
+  * Add the Jetstack Helm repository
 
   ```
 helm repo add jetstack https://charts.jetstack.io
   ```
 
-* Update your local Helm chart repository cache
+  * Update your local Helm chart repository cache
 
   ```
 helm repo update
   ```
 
-*  Deploy the cert-manager Helm chart
+  *  Deploy the cert-manager Helm chart
 
   ```
 helm install \
@@ -137,21 +137,21 @@ helm install \
 jetstack/cert-manager
   ```
 
-* Promethus components will be deployed in the monitoring namespace.   Pre-create a monitoring namespace :
+  * Promethus components will be deployed in the monitoring namespace.   Pre-create a monitoring namespace :
 
   ```
 kubectl create namespace monitoring
   ```
 
-* Generate cert and upload as secret into your PKS cluster (scoped to a namespace).  
+  * Generate cert and upload as secret into your PKS cluster (scoped to a namespace).  
 
-  * Generate a signing key pair
+    * Generate a signing key pair
 
 ```
     openssl genrsa -out ca.key 2048
 ```
 
-  * Create a self signed Certificate
+    * Create a self signed Certificate
 
 ```
     COMMON_NAME=example.com
@@ -160,7 +160,7 @@ kubectl create namespace monitoring
         -reqexts v3_req -extensions v3_ca -out ca.crt
 ```
 
-  * store cert in a Kubernetes Secret resource.
+    * store cert in a Kubernetes Secret resource.
 
 ```
     kubectl create secret tls ca-key-pair \
@@ -173,7 +173,7 @@ kubectl create namespace monitoring
 
   **Note**: The sample above is provided as an example only.  You should follow your enterprise processes for Certificate management or adapt to use a CA like [Let's Encrypt](https://docs.cert-manager.io/en/latest/tasks/issuers/setup-acme/index.html).   
 
-* To create a certificate issuer, copy / paste the YAML sample below in a file named `issuer.yaml`
+  * To create a certificate issuer, copy / paste the YAML sample below in a file named `issuer.yaml`
 
   ```yaml
 apiVersion: certmanager.k8s.io/v1alpha1
@@ -186,13 +186,13 @@ spec:
     secretName: ca-key-pair
   ```
 
-  * Apply the configuration with:
+    * Apply the configuration with:
 
     ```
 kubectl create -f issuer.yaml`
     ```
 
-* In order to obtain a Certificate, create a Certificate resource in the same namespace as the Issuer.  In this example, the Issuer is a namespaced resource.  To obtain a signed Certificate, copy / paste the following into a file named `desired-cert.yaml`.
+  * In order to obtain a Certificate, create a Certificate resource in the same namespace as the Issuer.  In this example, the Issuer is a namespaced resource.  To obtain a signed Certificate, copy / paste the following into a file named `desired-cert.yaml`.
 
   ```yaml
 apiVersion: certmanager.k8s.io/v1alpha1
@@ -214,7 +214,7 @@ spec:
   - example.com
   ```
 
-  * Then apply the configuration with:
+    * Then apply the configuration with:
 
     ```
 kubectl create -f desired-cert.yaml`
@@ -318,7 +318,7 @@ Deploy Promethus components in the monitoring namespace.
 helm install stable/prometheus-operator --name prometheus --namespace monitoring -f custom.yaml
 ```
 
-* A successful installation will look like:
+  * A successful installation will look like:
 
   ```
   NAME:   prometheus
@@ -526,13 +526,13 @@ kubectl delete crd podmonitors.monitoring.coreos.com
 kubectl delete crd alertmanagers.monitoring.coreos.com
 ```
 
-* Try again using the helm installation:
+  * Try again using the helm installation:
 
   ```
 helm install stable/prometheus-operator --name prometheus --namespace monitoring -f custom.yaml
   ```
 
-* If installation fails again, delete the installation and the CRDs once more. Try manually creating the CRDs. Wait for CRDs to be created, which should only take a few seconds
+  * If installation fails again, delete the installation and the CRDs once more. Try manually creating the CRDs. Wait for CRDs to be created, which should only take a few seconds
 
   ```
 kubectl create -f https://raw.githubusercontent.com/coreos/prometheus-operator/master/example/prometheus-operator-crd/alertmanager.crd.yaml
@@ -542,7 +542,7 @@ kubectl create -f https://raw.githubusercontent.com/coreos/prometheus-operator/m
 kubectl create -f https://raw.githubusercontent.com/coreos/prometheus-operator/master/example/prometheus-operator-crd/podmonitor.crd.yaml
   ```
 
-* Install the Prometheus Operator using helm chart and reference the `custom.yaml` but disable the CRD provisioning.
+  * Install the Prometheus Operator using helm chart and reference the `custom.yaml` but disable the CRD provisioning.
 
     ```
 helm install stable/prometheus-operator --name prometheus --namespace monitoring -f custom.yaml --set prometheusOperator.createCustomResource=false
@@ -581,7 +581,7 @@ prometheus-prometheus-oper-prometheus     ClusterIP   10.100.200.213   <none>   
 ```
 **Note**:  Prometheus services do not have External IPs Mapped.
 
-* Outside of Grafana, Prometheus services are not accessible outside of the cluster.  To reach Prometheus externally (from a desktop for example), use port forwarding:
+    * Outside of Grafana, Prometheus services are not accessible outside of the cluster.  To reach Prometheus externally (from a desktop for example), use port forwarding:
 
     ```
 kubectl port-forward prometheus-prometheus-prometheus-oper-prometheus-0 -n monitoring 9090:9090
