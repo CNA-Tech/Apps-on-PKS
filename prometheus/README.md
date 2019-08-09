@@ -12,6 +12,11 @@ Before performing the procedure in this topic, you must have installed and confi
 * NSX-T v2.3+
 * A Kubernetes cluster created with PKS with at least 1 master and 1 worker nodes
 
+If using Enterprise PKS
+```
+pks create-cluster k8s01 --external-hostname k8s01.corp.local -p small
+```
+
 ## Kubernetes StorageClass
 Ensure there is a storage class created with the name 'default', this storage class will be used by the Persistent Volume Claims needed for the Stateful Sets.
 
@@ -47,46 +52,15 @@ curl -L https://git.io/get_helm.sh | bash
 
 ### Deploy Tiller
 
-Create a service account for Tiller and bind it to the cluster-admin role. Copy the following into a file named `rbac-config.yaml`
-
-```yaml
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: tiller
-  namespace: kube-system
----
-apiVersion: rbac.authorization.k8s.io/v1beta1
-kind: ClusterRoleBinding
-metadata:
-  name: tiller
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: cluster-admin
-subjects:
-  - kind: ServiceAccount
-    name: tiller
-    namespace: kube-system
- ```
-
-  * Apply the configuration using the following command:
-
   ```
-kubectl apply -f rbac-config.yaml
-  ```
-
-  * Alternatively, you can use:
-
-  ```
-kubectl create serviceaccount --namespace kube-system tiller`
+kubectl create serviceaccount --namespace kube-system tiller
 kubectl create clusterrolebinding tiller-clusterrolebinding --clusterrole=cluster-admin --serviceaccount=kube-system:tiller
   ```
 
 Initialize Helm using the service account by running the following command:
 
 ```
-helm init --skip-refresh --upgrade --service-account tiller`
+helm init --skip-refresh --upgrade --service-account tiller
 ```
 
 **Note**: For added security, enable SSL between [Helm and Tiller](https://docs.helm.sh/using_helm/#using-ssl-between-helm-and-tiller).
@@ -100,7 +74,7 @@ The cert-manager is a native Kubernetes certificate management controller.  The 
   1. Install the CustomResourceDefinition resources separately
 
   ```
-kubectl apply -f https://raw.githubusercontent.com/jetstack/cert-manager/release-0.8/deploy/manifests/00-crds.yaml`
+kubectl apply -f https://raw.githubusercontent.com/jetstack/cert-manager/release-0.8/deploy/manifests/00-crds.yaml
   ```
 
   2. Create the namespace for cert-manager
@@ -562,14 +536,14 @@ prometheus-prometheus-prometheus-oper-prometheus-0       3/3     Running   1    
 ```
 root@cli-vm:~/app# kubectl get svc -n monitoring
 NAME                                      TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)             AGE
-alertmanager-operated                     ClusterIP   None             <none>        9093/TCP,6783/TCP   3m50s
-prometheus-grafana                        ClusterIP   10.100.200.98    <none>        80/TCP              4m1s
-prometheus-kube-state-metrics             ClusterIP   10.100.200.248   <none>        8080/TCP            4m1s
-prometheus-operated                       ClusterIP   None             <none>        9090/TCP            3m40s
-prometheus-prometheus-node-exporter       ClusterIP   10.100.200.39    <none>        9100/TCP            4m1s
-prometheus-prometheus-oper-alertmanager   ClusterIP   10.100.200.157   <none>        9093/TCP            4m1s
-prometheus-prometheus-oper-operator       ClusterIP   10.100.200.150   <none>        8080/TCP            4m1s
-prometheus-prometheus-oper-prometheus     ClusterIP   10.100.200.213   <none>        9090/TCP            4m1s
+alertmanager-operated                     ClusterIP   None              <none>        9093/TCP,6783/TCP   3m50s
+prometheus-grafana                        ClusterIP   10.100.200.200    <none>        80/TCP              4m1s
+prometheus-kube-state-metrics             ClusterIP   10.100.200.232    <none>        8080/TCP            4m1s
+prometheus-operated                       ClusterIP   None              <none>        9090/TCP            3m40s
+prometheus-prometheus-node-exporter       ClusterIP   10.100.200.230    <none>        9100/TCP            4m1s
+prometheus-prometheus-oper-alertmanager   ClusterIP   10.100.200.136    <none>        9093/TCP            4m1s
+prometheus-prometheus-oper-operator       ClusterIP   10.100.200.179    <none>        8080/TCP            4m1s
+prometheus-prometheus-oper-prometheus     ClusterIP   10.100.200.29     <none>        9090/TCP            4m1s
 ```
 **Note**:  Prometheus services do not have External IPs Mapped.
 
@@ -595,14 +569,14 @@ Or it can found by simply looking at the services and seeing what Load Balancer 
 root@cli-vm:~/app# kubectl get svc
 NAME                                  TYPE           CLUSTER-IP       EXTERNAL-IP                  PORT(S)                      AGE
 kubernetes                            ClusterIP      10.100.200.1     <none>                       443/TCP                      150m
-nginx-nginx-ingress-controller        LoadBalancer   10.100.200.27    10.173.62.120,100.64.80.37   80:32265/TCP,443:30441/TCP   8m28s
-nginx-nginx-ingress-default-backend   ClusterIP      10.100.200.252   <none>                       80/TCP                       8m28s
+nginx-nginx-ingress-controller        LoadBalancer   10.100.200.201   100.64.176.7,24.24.24.19   80:32265/TCP,443:30441/TCP   8m28s
+nginx-nginx-ingress-default-backend   ClusterIP      10.100.200.211   <none>                       80/TCP                       8m28s
 ```
 
 In a production environment, register the external IP to FQDN mapping in a DNS server. Alternatively, for a pre-production development environment, create a temporary lookup entry in `/etc/hosts` file. Edit the `etc/hosts` file of the local machine putting the IP and DNS name for the Grafana dashboard to appear in a browser. Depending on the environment and access, use the correct Load Balancer IP. Such as:
 
 ```
-100.64.80.37  grafana.test.example.com
+24.24.24.19  grafana.test.example.com
 ```
 
 To access Grafana, enter `https://grafana.test.example.com/` in a web browser
